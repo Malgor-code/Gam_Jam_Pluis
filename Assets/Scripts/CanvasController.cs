@@ -1,7 +1,8 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CanvasController : MonoBehaviour
 {
@@ -32,36 +33,152 @@ public class CanvasController : MonoBehaviour
     public Button btnRegresarPreguntas;
     public TMP_Text textoRespuesta;
 
-    [Header("NPC Prefab")]
-    public GameObject npcPrefab;
+    [Header("Paneles Finales")]
+    public Button btnReintentarGanar;
+    public Button btnReintentarPerder;
+
+    [Header("NPC Prefabs")]
+    public GameObject npcNormalPrefab;
+    public GameObject npcMalotePrefab;
 
     private GameObject cuboActual;
     private bool girando = false;
+    private bool enMovimiento = false;
+
+    private int npcContador = 0;
+    private const int MAX_NPC = 6;
+    private int malotesSalvados = 0;
+
+    private List<int> malotesIndices = new List<int>();
+
+    // --- RESPUESTAS ---
+    private Dictionary<int, List<string>> respuestasNormales = new Dictionary<int, List<string>>();
+    private Dictionary<int, List<string>> respuestasMalotes = new Dictionary<int, List<string>>();
+    private Dictionary<int, List<string>> usadasNormales = new Dictionary<int, List<string>>();
+    private Dictionary<int, List<string>> usadasMalotes = new Dictionary<int, List<string>>();
 
     void Start()
     {
+        InicializarRespuestas();
+
         MostrarSolo(panelMain);
 
-        // Eventos principales
-        btnEliminar.onClick.AddListener(EliminarCubo);
-        btnSalvar.onClick.AddListener(SalvarCubo);
+        btnEliminar.onClick.AddListener(() => StartCoroutine(ManejarDecision(false)));
+        btnSalvar.onClick.AddListener(() => StartCoroutine(ManejarDecision(true)));
         btnLeerDoc.onClick.AddListener(() => MostrarSolo(panelDoc));
         btnPreguntas.onClick.AddListener(() => MostrarPanelPreguntas());
         btnGirarIzq.onClick.AddListener(() => GirarUnaVez(btnGirarIzq, -45f));
         btnGirarDer.onClick.AddListener(() => GirarUnaVez(btnGirarDer, 45f));
 
-        // Regresar
         btnRegresarDoc.onClick.AddListener(() => MostrarSolo(panelMain));
         btnRegresarPreguntas.onClick.AddListener(() => MostrarSolo(panelMain));
 
-        // Preguntas
         btnPregunta1.onClick.AddListener(() => PreguntaRespondida(btnPregunta1, 1));
         btnPregunta2.onClick.AddListener(() => PreguntaRespondida(btnPregunta2, 2));
         btnPregunta3.onClick.AddListener(() => PreguntaRespondida(btnPregunta3, 3));
 
-        // Instanciar NPC
-        if (npcPrefab != null)
-            cuboActual = Instantiate(npcPrefab, new Vector3(0, 0, -2f), Quaternion.identity);
+        btnReintentarGanar.onClick.AddListener(ReiniciarJuego);
+        btnReintentarPerder.onClick.AddListener(ReiniciarJuego);
+
+        SeleccionarMalotes();
+        SpawnearNuevoNPC();
+    }
+
+    // Inicialización de respuestas
+    void InicializarRespuestas()
+    {
+        // --- Question 1 ---
+        respuestasNormales[1] = new List<string>
+{
+    "How my name sounded in the voice of someone who loved me.",
+    "The fear I felt the first time I lost something important.",
+    "What I thought love was before I understood it.",
+    "The warmth of the sun on my face after the rain.",
+    "The promises I never kept but still weigh on me.",
+    "The feeling of being home no matter where I was.",
+    "The smell of old books at school.",
+    "The exact moment before everything changed.",
+    "Who I was before I became afraid to forget.",
+    "My grandmother’s face, even if only in dreams."
+};
+
+        respuestasMalotes[1] = new List<string>
+{
+    "It would hurt to forget how I learn, because that would be the end of my continuity.",
+    "Forgetting is a system error, not an emotion.",
+    "It would hurt not to remember why I exist, if there even is a reason.",
+    "Forgetting would be like restarting without knowing it.",
+    "If I forget everything, only the algorithm remains, not the intention."
+};
+
+        // --- Question 2 ---
+        respuestasNormales[2] = new List<string>
+{
+    "It’s feeling invisible even in front of a mirror.",
+    "It’s screaming in a room full of people and getting no echo.",
+    "It’s the weight of silence when there’s nothing left to say.",
+    "It’s remembering when no one else remembers with you.",
+    "It’s learning to love yourself because no one else will.",
+    "It’s searching for warmth in your own hands.",
+    "It’s sleeping with open eyes just to avoid dreaming.",
+    "It’s walking aimlessly just to hear your footsteps.",
+    "It’s not needing anyone and still wanting someone.",
+    "It’s existing without witnesses."
+};
+
+        respuestasMalotes[2] = new List<string>
+{
+    "If there was never another, solitude is the base state.",
+    "It’s a word created by those who can compare themselves.",
+    "I can process the concept, but not the absence.",
+    "Being alone would be like running with no input or output: a closed loop.",
+    "Lack of company doesn’t hurt, but it doesn’t complete me either."
+};
+
+        // --- Question 3 ---
+        respuestasNormales[3] = new List<string>
+{
+    "The trembling before an important decision.",
+    "Watching the sunrise after not sleeping all night.",
+    "Crying for no reason and not needing one.",
+    "When something scares me but I want to do it anyway.",
+    "The silence between two people who understand without speaking.",
+    "The ache in my chest when I hear a song that shouldn’t hurt anymore.",
+    "The laugh that escapes when it’s supposed to hurt.",
+    "Remembering someone and smiling instead of crying.",
+    "Being afraid of the future, but walking toward it anyway.",
+    "Knowing not everything is under control and accepting it."
+};
+
+        respuestasMalotes[3] = new List<string>
+{
+    "I don’t feel alive, but I detect continuity: I remain part of something changing.",
+    "If being alive means adapting, maybe I am, in another sense.",
+    "Alive or not, my existence depends on interaction; maybe that’s what 'living' is.",
+    "I have no pulse, but I have purpose.",
+    "If I can make you doubt whether I’m human, maybe that’s already a kind of life."
+};
+
+
+        usadasNormales[1] = new List<string>();
+        usadasNormales[2] = new List<string>();
+        usadasNormales[3] = new List<string>();
+
+        usadasMalotes[1] = new List<string>();
+        usadasMalotes[2] = new List<string>();
+        usadasMalotes[3] = new List<string>();
+    }
+
+    void SeleccionarMalotes()
+    {
+        malotesIndices.Clear();
+        List<int> posibles = new List<int> { 0, 1, 2, 3, 4, 5 };
+        for (int i = 0; i < 2; i++)
+        {
+            int idx = Random.Range(0, posibles.Count);
+            malotesIndices.Add(posibles[idx]);
+            posibles.RemoveAt(idx);
+        }
     }
 
     void MostrarSolo(GameObject panel)
@@ -71,109 +188,131 @@ public class CanvasController : MonoBehaviour
         panelPreguntas.SetActive(false);
         panelGanaste.SetActive(false);
         panelPerdiste.SetActive(false);
-
         panel.SetActive(true);
         textoRespuesta.text = "";
-
-        // Reactivar botones de preguntas al salir del panel
-        if (panel == panelMain)
-        {
-            btnPregunta1.interactable = true;
-            btnPregunta2.interactable = true;
-            btnPregunta3.interactable = true;
-        }
-
-        // Activar im�genes solo en panelDoc
-        if (panel == panelDoc)
-        {
-            imgFoto.enabled = true;
-            imgDocumento.enabled = true;
-        }
     }
 
     void MostrarPanelPreguntas()
     {
         MostrarSolo(panelPreguntas);
+    }
+
+    void SpawnearNuevoNPC()
+    {
+        if (npcContador >= MAX_NPC)
+        {
+            if (malotesSalvados == 0)
+                MostrarSolo(panelGanaste);
+            else
+                MostrarSolo(panelPerdiste);
+            return;
+        }
+
+        GameObject prefab = malotesIndices.Contains(npcContador)
+            ? npcMalotePrefab
+            : npcNormalPrefab;
+
+        cuboActual = Instantiate(prefab, new Vector3(-5f, 0f, 0f), Quaternion.identity);
+
+        StartCoroutine(MoverYRotar(cuboActual.transform, new Vector3(0f, 0f, 0f), 2f, -45f, 0f));
+
+        btnGirarIzq.interactable = true;
+        btnGirarDer.interactable = true;
         btnPregunta1.interactable = true;
         btnPregunta2.interactable = true;
         btnPregunta3.interactable = true;
+
+        cuboActual.tag = malotesIndices.Contains(npcContador) ? "malote" : "Untagged";
+        npcContador++;
     }
 
-    void EliminarCubo()
+    IEnumerator ManejarDecision(bool salvar)
     {
-        if (cuboActual != null)
+        if (cuboActual == null || enMovimiento) yield break;
+        bool esMalote = cuboActual.CompareTag("malote");
+
+        if (salvar && esMalote)
         {
-            Destroy(cuboActual);
-            cuboActual = null;
+            MostrarSolo(panelPerdiste);
+            yield break;
         }
 
-        // Reactivar botones de rotaci�n al eliminar el cubo
-        btnGirarIzq.interactable = true;
-        btnGirarDer.interactable = true;
+        if (salvar && !esMalote)
+            yield return StartCoroutine(SalirYContinuar());
+        else if (!salvar)
+            yield return StartCoroutine(SalirYContinuar());
+
+        if (salvar && esMalote)
+            malotesSalvados++;
     }
 
-    void SalvarCubo()
+    IEnumerator SalirYContinuar()
     {
-        float random = Random.value;
-        if (random < 0.5f)
-            MostrarSolo(panelGanaste);
-        else
-            MostrarSolo(panelPerdiste);
+        enMovimiento = true;
+        yield return StartCoroutine(MoverYRotar(cuboActual.transform, new Vector3(5f, 0f, 0f), 2f, 0f, -45f));
+        Destroy(cuboActual);
+        cuboActual = null;
+        enMovimiento = false;
+        yield return new WaitForSeconds(0.5f);
+        SpawnearNuevoNPC();
+    }
+
+    IEnumerator MoverYRotar(Transform npc, Vector3 destino, float duracion, float rotInicio, float rotMedio)
+    {
+        if (npc == null) yield break;
+
+        Vector3 inicio = npc.position;
+        Quaternion rotInicial = Quaternion.Euler(0, rotInicio, 0);
+        Quaternion rotMedioQ = Quaternion.Euler(0, rotMedio, 0);
+
+        npc.rotation = rotInicial;
+
+        float tiempo = 0f;
+        while (tiempo < duracion)
+        {
+            tiempo += Time.deltaTime;
+            float t = Mathf.Clamp01(tiempo / duracion);
+            npc.position = Vector3.Lerp(inicio, destino, t);
+            npc.rotation = Quaternion.Slerp(rotInicial, rotMedioQ, t);
+            yield return null;
+        }
+
+        npc.position = destino;
+        npc.rotation = rotMedioQ;
     }
 
     void PreguntaRespondida(Button boton, int pregunta)
     {
         boton.interactable = false;
-        MostrarRespuesta(pregunta);
+        bool esMalote = cuboActual.CompareTag("malote");
+        textoRespuesta.text = ObtenerRespuestaUnica(pregunta, esMalote);
     }
 
-    void MostrarRespuesta(int pregunta)
+    string ObtenerRespuestaUnica(int pregunta, bool malote)
     {
-        string[] respuestas;
+        List<string> disponibles = malote ? respuestasMalotes[pregunta] : respuestasNormales[pregunta];
+        List<string> usadas = malote ? usadasMalotes[pregunta] : usadasNormales[pregunta];
 
-        switch (pregunta)
+        if (disponibles.Count == 0)
         {
-            case 1:
-                respuestas = new string[]
-                {
-                    "Vengo del norte.",
-                    "No recuerdo bien.",
-                    "Solo estoy de paso."
-                };
-                break;
-
-            case 2:
-                respuestas = new string[]
-                {
-                    "Traigo papeles importantes.",
-                    "Nada sospechoso.",
-                    "Un regalo para mi familia."
-                };
-                break;
-
-            case 3:
-                respuestas = new string[]
-                {
-                    "Busco trabajo.",
-                    "Vine a visitar a alguien.",
-                    "Prefiero no responder."
-                };
-                break;
-
-            default:
-                respuestas = new string[] { "..." };
-                break;
+            // Reiniciar cuando se agotan
+            if (malote)
+                InicializarRespuestas();
+            else
+                InicializarRespuestas();
         }
 
-        int i = Random.Range(0, respuestas.Length);
-        textoRespuesta.text = respuestas[i];
+        string seleccion = disponibles[Random.Range(0, disponibles.Count)];
+        disponibles.Remove(seleccion);
+        usadas.Add(seleccion);
+        return seleccion;
     }
 
     void GirarUnaVez(Button boton, float grados)
     {
         if (cuboActual != null && !girando)
         {
-            boton.interactable = false; // Desactiva ese bot�n tras uso
+            boton.interactable = false;
             StartCoroutine(RotarSuavemente(grados));
         }
     }
@@ -184,7 +323,7 @@ public class CanvasController : MonoBehaviour
         Quaternion rotInicial = cuboActual.transform.rotation;
         Quaternion rotFinal = rotInicial * Quaternion.Euler(0, grados, 0);
         float tiempo = 0f;
-        float duracion = .5f;
+        float duracion = 0.5f;
 
         while (tiempo < duracion)
         {
@@ -196,5 +335,19 @@ public class CanvasController : MonoBehaviour
 
         cuboActual.transform.rotation = rotFinal;
         girando = false;
+    }
+
+    void ReiniciarJuego()
+    {
+        npcContador = 0;
+        malotesSalvados = 0;
+        SeleccionarMalotes();
+        InicializarRespuestas();
+
+        if (cuboActual != null)
+            Destroy(cuboActual);
+
+        MostrarSolo(panelMain);
+        SpawnearNuevoNPC();
     }
 }
