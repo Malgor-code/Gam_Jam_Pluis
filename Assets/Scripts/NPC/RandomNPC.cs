@@ -12,14 +12,14 @@ public class RandomNPC : MonoBehaviour
     public Sprite[] eyeSprites;
     public Sprite[] mouthSprites;
 
-    [Header("Materiales y colores")]
-    public Renderer bodyRenderer;
-    public Color[] skinColors;
-    public Color[] shirtColors;
+    [Header("Materiales del cuerpo y cabeza")]
+    public Renderer bodyRenderer;   // asigna Msh_Body
+    public Renderer headRenderer;   // asigna Msh_Head
+    public Material[] bodyMaterials; // materiales posibles para cuerpo + cabeza
 
     [Header("Chip")]
-    public Renderer chipRenderer;
-    public Color[] chipColors;
+    public Renderer chipRenderer;   // asigna Msh_Chip
+    public Material[] chipMaterials; // materiales posibles para el chip
 
     void Start()
     {
@@ -45,16 +45,16 @@ public class RandomNPC : MonoBehaviour
         if (mouth != null && mouthSprites.Length > 0)
             mouth.sprite = mouthSprites[Random.Range(0, mouthSprites.Length)];
 
-        // --- Material del cuerpo ---
-        if (bodyRenderer != null)
+        // --- Material del cuerpo y cabeza ---
+        if (bodyMaterials.Length > 0 && bodyRenderer != null && headRenderer != null)
         {
-            Material mat = bodyRenderer.material;
-            mat.SetColor("_SkinColor", skinColors[Random.Range(0, skinColors.Length)]);
-            mat.SetColor("_ShirtColor", shirtColors[Random.Range(0, shirtColors.Length)]);
+            Material randomMat = bodyMaterials[Random.Range(0, bodyMaterials.Length)];
+            bodyRenderer.material = randomMat;
+            headRenderer.material = randomMat;
         }
 
-        // --- Chip ---
-        if (chipRenderer != null && chipColors.Length > 0)
-            chipRenderer.material.color = chipColors[Random.Range(0, chipColors.Length)];
+        // --- Material del chip ---
+        if (chipMaterials.Length > 0 && chipRenderer != null)
+            chipRenderer.material = chipMaterials[Random.Range(0, chipMaterials.Length)];
     }
 }

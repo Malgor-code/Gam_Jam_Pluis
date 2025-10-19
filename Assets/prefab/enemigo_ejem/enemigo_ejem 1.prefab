@@ -158,15 +158,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   hairs: []
   accessories: []
-  eyes: {fileID: 0}
+  eyes: {fileID: 546891347734948570}
   mouth: {fileID: 0}
   eyeSprites: []
   mouthSprites: []
-  bodyRenderer: {fileID: 0}
-  skinColors: []
-  shirtColors: []
+  bodyRenderer: {fileID: 7355190343062954588}
+  headRenderer: {fileID: 4668371004817050984}
+  bodyMaterials:
+  - {fileID: 2100000, guid: a0ca34406ad15554a91f2ac9f836afc2, type: 2}
+  - {fileID: 2100000, guid: 93e234366ab2ceb45a6709e1aa721e64, type: 2}
+  - {fileID: 2100000, guid: 52cc4f90ef6f0494898395aa2f69b192, type: 2}
+  - {fileID: 2100000, guid: da7d6bca5be7d2a4cbca6f5749d36f13, type: 2}
+  - {fileID: 2100000, guid: 0c0470020cfae6e4c95d61a1cefbdb23, type: 2}
+  - {fileID: 2100000, guid: b86c2336b373a8c4d8a585bb97f5951b, type: 2}
+  - {fileID: 2100000, guid: 75dd778d2224bb144a26a006b9ee7d93, type: 2}
+  - {fileID: 2100000, guid: 349fc87980479ed43a528b7d6c1a351c, type: 2}
+  - {fileID: 2100000, guid: fd0db10961f59a342876f0f3620c28b5, type: 2}
   chipRenderer: {fileID: 0}
-  chipColors: []
+  chipMaterials: []
 --- !u!1 &3311895890409353360
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,5 +521,15 @@ Animator:
 --- !u!4 &2208167256491978922 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: e4634b29c72e2b14f96f92c64635a9bf, type: 3}
+  m_PrefabInstance: {fileID: 1814463664450115393}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4668371004817050984 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 6478190188227828265, guid: e4634b29c72e2b14f96f92c64635a9bf, type: 3}
+  m_PrefabInstance: {fileID: 1814463664450115393}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &7355190343062954588 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 9168387329277146397, guid: e4634b29c72e2b14f96f92c64635a9bf, type: 3}
   m_PrefabInstance: {fileID: 1814463664450115393}
   m_PrefabAsset: {fileID: 0}
