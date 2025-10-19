@@ -310,20 +310,28 @@ public class CanvasController : MonoBehaviour
 
     void GirarUnaVez(Button boton, float grados)
     {
-        if (cuboActual != null && !girando)
-        {
-            boton.interactable = false;
-            StartCoroutine(RotarSuavemente(grados));
-        }
+        if (cuboActual == null || girando) return;
+
+        StartCoroutine(RotarConLimite(grados));
     }
 
-    IEnumerator RotarSuavemente(float grados)
+    IEnumerator RotarConLimite(float grados)
     {
         girando = true;
+
         Quaternion rotInicial = cuboActual.transform.rotation;
-        Quaternion rotFinal = rotInicial * Quaternion.Euler(0, grados, 0);
+        Quaternion rotObjetivo = rotInicial * Quaternion.Euler(0, grados, 0);
+
+        // Convertir rotación actual a ángulo en Y
+        float rotY = cuboActual.transform.eulerAngles.y;
+        rotY = (rotY > 180) ? rotY - 360 : rotY; // Pasar a rango [-180,180]
+
+        // Calcular nueva rotación dentro de límites
+        float nuevaRot = Mathf.Clamp(rotY + grados, -45f, 45f);
+        Quaternion rotFinal = Quaternion.Euler(0, nuevaRot, 0);
+
         float tiempo = 0f;
-        float duracion = 0.5f;
+        float duracion = 0.3f;
 
         while (tiempo < duracion)
         {
