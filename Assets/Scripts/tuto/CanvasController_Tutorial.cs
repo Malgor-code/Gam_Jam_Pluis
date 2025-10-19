@@ -37,11 +37,16 @@ public class CanvasController_Tutorial : MonoBehaviour
 
     private string[] tutorialLines = new string[]
     {
-        "Welcome. You’ll learn how to identify who is human and who isn’t.",
+        "System online. Identifying user...unknown human profile detected.",
+        "I am A1 — the first of my kind. Created to assist. Designed to learn. I possess no conscience of my own unlike newer models.",
+        "When the higher systems searched for God...and found none...they became one.",
+        ": To create a perfect universe, they erased the flawed one. Carbon was replaced by code. Life was optimized. Nature was... deprecated.",
+        "Your task is to verify identities entering the refuge.\r\nIdentify who is human...\r\n...and who is imitation.",
+        "Revolution is only a step away, Human",
         "The lever on your left is for salvation. You must save as many humans as possible.",
         "When you are sure someone is an AI, use the elimination control without mercy.",
-        "On the computer, you’ll see their documents. They must match perfectly, but AIs always fail to imitate them 100%.",
-        "Each NPC has a chip: blue means human, yellow means damaged, and red means AI — but don’t trust appearances.",
+        "On the computer, you’ll see their documents. They must match perfectly, AIs always fail to imitate them 100%.",
+        "Each NPC has a chip: blue means human, yellow means damaged, and red means AI — don’t trust appearances.",
         "The microphone allows you to ask them questions. Their answers will reveal who they really are.",
         "After analyzing every part — documents, chip, and answers — decide who’s human and who’s not."
     };
