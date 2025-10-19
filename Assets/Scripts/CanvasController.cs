@@ -22,6 +22,8 @@ public class CanvasController : MonoBehaviour
     public Button btnGirarDer;
     [Header("Bloqueo")]
     public GameObject panelBloqueo;
+    [Header("Alerta visual")]
+    public GameObject alertaImagen; // ← arrastra aquí la imagen con la animación
 
     [Header("Animación Eliminar")]
     public RectTransform imagenEliminar;  // arrastra aquí la imagen del Canvas
@@ -94,10 +96,16 @@ public class CanvasController : MonoBehaviour
         btnEliminar.onClick.AddListener(() =>
         {
             ReproducirAudio(audioEliminar);
-            StartCoroutine(MoverImagenEliminar());   // mueve el sprite
-            StartCoroutine(ManejarDecision(false));   // elimina NPC sin caminar
-        });
 
+            // Activar la imagen de alerta
+            if (alertaImagen != null)
+                alertaImagen.SetActive(true);
+
+            StartCoroutine(MoverImagenEliminar());
+            StartCoroutine(ManejarDecision(false));
+            StartCoroutine(DesactivarAlerta(2f)); // 2 segundos
+
+        });
 
         btnSalvar.onClick.AddListener(() =>
         {
@@ -622,6 +630,12 @@ public class CanvasController : MonoBehaviour
         }
 
         docsRect.anchoredPosition = posFinal;
+    }
+    IEnumerator DesactivarAlerta(float tiempo)
+    {
+        yield return new WaitForSeconds(tiempo);
+        if (alertaImagen != null)
+            alertaImagen.SetActive(false);
     }
 
 }

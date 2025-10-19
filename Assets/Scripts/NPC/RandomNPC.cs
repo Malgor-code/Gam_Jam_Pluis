@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class RandomNPC : MonoBehaviour
 {
@@ -14,16 +14,17 @@ public class RandomNPC : MonoBehaviour
     public Renderer headRenderer;
     public Material[] bodyMaterials;
 
-    [Header("Materiales del cabello")]
+    [Header("Materiales del cabello y accesorios")]
     public Material[] hairMaterials;
+    public Material[] accessoryMaterials;
 
     [Header("Chip")]
     public Renderer chipRenderer;
     public Material[] chipMaterials;
 
     [Header("Probabilidades")]
-    [Range(0f, 1f)] public float accessoryChance = 0.7f; // 70% de posibilidad de tener accesorios
-    [Range(1, 5)] public int maxAccessories = 3;         // Máximo que puede usar (si hay suficientes)
+    [Range(0f, 1f)] public float accessoryChance = 0.7f; // Probabilidad de tener accesorios
+    [Range(1, 5)] public int maxAccessories = 3;         // Máximo que puede usar
 
     private static List<Material> usedMaterials = new List<Material>();
 
@@ -69,8 +70,24 @@ public class RandomNPC : MonoBehaviour
             {
                 if (indices.Count == 0) break;
                 int idx = Random.Range(0, indices.Count);
-                accessories[indices[idx]].SetActive(true);
+                GameObject selectedAccessory = accessories[indices[idx]];
+                selectedAccessory.SetActive(true);
                 indices.RemoveAt(idx);
+
+                // --- Material aleatorio para cada accesorio activo ---
+                if (accessoryMaterials.Length > 0)
+                {
+                    Material randomAccMat = accessoryMaterials[Random.Range(0, accessoryMaterials.Length)];
+                    Renderer[] renderers = selectedAccessory.GetComponentsInChildren<Renderer>(true);
+
+                    foreach (Renderer r in renderers)
+                    {
+                        Material[] mats = r.materials;
+                        for (int m = 0; m < mats.Length; m++)
+                            mats[m] = randomAccMat;
+                        r.materials = mats;
+                    }
+                }
             }
         }
 
