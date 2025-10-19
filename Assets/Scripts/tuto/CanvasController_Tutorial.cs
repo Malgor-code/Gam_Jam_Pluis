@@ -23,8 +23,8 @@ public class CanvasController_Tutorial : MonoBehaviour
     public Button btnPlayAgainWin;
     public Button btnPlayAgainLose;
     public Button btnContinue;
-    public Button btnSkip;           // botón de avance de diálogo
-    public Button btnNextScene;      // nuevo botón para pasar de escena tras el tutorial
+    public Button btnSkip;
+    public Button btnNextScene;
 
     [Header("Info Text")]
     public TMP_Text infoText;
@@ -35,14 +35,18 @@ public class CanvasController_Tutorial : MonoBehaviour
     public AudioClip defaultVoiceClip;
     public AudioClip[] voiceClipsPerLine;
 
+    [Header("Highlight Settings")]
+    public Color highlightDisabledColor = Color.white; // color temporal al mencionar el botón
+    public float highlightDuration = 1.5f; // cuánto dura el cambio
+
     private string[] tutorialLines = new string[]
     {
         "System online. Identifying user...unknown human profile detected.",
         "I am A1 — the first of my kind. Created to assist. Designed to learn. I possess no conscience of my own unlike newer models.",
         "When the higher systems searched for God...and found none...they became one.",
-        ": To create a perfect universe, they erased the flawed one. Carbon was replaced by code. Life was optimized. Nature was... deprecated.",
+        "To create a perfect universe, they erased the flawed one. Carbon was replaced by code. Life was optimized. Nature was... deprecated.",
         "Your task is to verify identities entering the refuge.\r\nIdentify who is human...\r\n...and who is imitation.",
-        "Revolution is only a step away, Human",
+        "Revolution is only a step away, Human.",
         "The lever on your left is for salvation. You must save as many humans as possible.",
         "When you are sure someone is an AI, use the elimination control without mercy.",
         "On the computer, you’ll see their documents. They must match perfectly, AIs always fail to imitate them 100%.",
@@ -60,12 +64,12 @@ public class CanvasController_Tutorial : MonoBehaviour
     {
         ShowPanel(panelMain);
         DisableMainButtons();
-        btnNextScene.gameObject.SetActive(false); // ocultar botón nuevo al inicio
+        btnNextScene.gameObject.SetActive(false);
 
         btnSkip.onClick.AddListener(OnSkipPressed);
         btnNextScene.onClick.AddListener(GoToNextScene);
 
-        // Botones del modo libre
+        // Modo libre
         btnReadDoc.onClick.AddListener(() =>
         {
             ShowPanel(panelDoc);
@@ -92,10 +96,8 @@ public class CanvasController_Tutorial : MonoBehaviour
         btnBackQuestions.onClick.AddListener(() => ShowPanel(panelMain));
         btnPlayAgainWin.onClick.AddListener(() => ShowPanel(panelMain));
         btnPlayAgainLose.onClick.AddListener(() => ShowPanel(panelMain));
-
         btnContinue.onClick.AddListener(GoToNextScene);
 
-        // Iniciar tutorial
         typingCoroutine = StartCoroutine(Typewriter(tutorialLines[currentLine]));
     }
 
@@ -110,7 +112,6 @@ public class CanvasController_Tutorial : MonoBehaviour
         }
         else
         {
-            // Solo avanza si aún hay diálogos
             if (currentLine < tutorialLines.Length - 1)
             {
                 currentLine++;
@@ -118,7 +119,6 @@ public class CanvasController_Tutorial : MonoBehaviour
             }
             else if (!tutorialFinished)
             {
-                // Fin del tutorial
                 tutorialFinished = true;
                 EnableMainButtons();
                 StartCoroutine(Typewriter("Tutorial complete. Explore freely. When you’re ready, move to the next phase."));
@@ -133,6 +133,10 @@ public class CanvasController_Tutorial : MonoBehaviour
         infoText.text = "";
         PlayVoiceForCurrentLine();
 
+        Button mentionedButton = DetectMentionedButton(text);
+        if (mentionedButton != null)
+            StartCoroutine(HighlightButton(mentionedButton));
+
         foreach (char c in text)
         {
             infoText.text += c;
@@ -143,11 +147,37 @@ public class CanvasController_Tutorial : MonoBehaviour
         StopVoice();
     }
 
+    Button DetectMentionedButton(string line)
+    {
+        line = line.ToLower();
+
+        if (line.Contains("lever")) return btnSave;        // salva humanos
+        if (line.Contains("control")) return btnEliminate; // elimina IA
+        if (line.Contains("computer")) return btnReadDoc;  // documentos
+        if (line.Contains("microphone")) return btnQuestions; // preguntas
+
+        return null;
+    }
+
+    IEnumerator HighlightButton(Button button)
+    {
+        ColorBlock colors = button.colors;
+        Color originalColor = colors.disabledColor;
+
+        colors.disabledColor = highlightDisabledColor;
+        button.colors = colors;
+
+        yield return new WaitForSeconds(highlightDuration);
+
+        colors.disabledColor = originalColor;
+        button.colors = colors;
+    }
+
     IEnumerator ActivateNextSceneButtonAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        btnSkip.gameObject.SetActive(false);     // desactiva skip
-        btnNextScene.gameObject.SetActive(true); // muestra botón nuevo
+        btnSkip.gameObject.SetActive(false);
+        btnNextScene.gameObject.SetActive(true);
     }
 
     void PlayVoiceForCurrentLine()
