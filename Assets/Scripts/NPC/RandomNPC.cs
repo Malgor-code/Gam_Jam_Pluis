@@ -1,5 +1,5 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class RandomNPC : MonoBehaviour
 {
@@ -21,6 +21,10 @@ public class RandomNPC : MonoBehaviour
     public Renderer chipRenderer;
     public Material[] chipMaterials;
 
+    [Header("Probabilidades")]
+    [Range(0f, 1f)] public float accessoryChance = 0.7f; // 70% de posibilidad de tener accesorios
+    [Range(1, 5)] public int maxAccessories = 3;         // Máximo que puede usar (si hay suficientes)
+
     private static List<Material> usedMaterials = new List<Material>();
 
     void Start()
@@ -41,8 +45,6 @@ public class RandomNPC : MonoBehaviour
             if (hairMaterials.Length > 0)
             {
                 Material randomHairMat = hairMaterials[Random.Range(0, hairMaterials.Length)];
-
-                // Obtener TODOS los renderers del cabello (incluidos subniveles)
                 Renderer[] renderers = selectedHair.GetComponentsInChildren<Renderer>(true);
 
                 foreach (Renderer r in renderers)
@@ -55,11 +57,22 @@ public class RandomNPC : MonoBehaviour
             }
         }
 
-
-        // --- Accesorios ---
+        // --- Accesorios (puede no tener, uno o varios) ---
         foreach (var a in accessories) a.SetActive(false);
-        if (accessories.Length > 0)
-            accessories[Random.Range(0, accessories.Length)].SetActive(true);
+        if (accessories.Length > 0 && Random.value < accessoryChance)
+        {
+            int cantidad = Random.Range(1, Mathf.Min(maxAccessories, accessories.Length) + 1);
+            List<int> indices = new List<int>();
+            for (int i = 0; i < accessories.Length; i++) indices.Add(i);
+
+            for (int i = 0; i < cantidad; i++)
+            {
+                if (indices.Count == 0) break;
+                int idx = Random.Range(0, indices.Count);
+                accessories[indices[idx]].SetActive(true);
+                indices.RemoveAt(idx);
+            }
+        }
 
         // --- Ojos ---
         foreach (var e in eyes) e.SetActive(false);

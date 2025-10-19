@@ -3688,7 +3688,9 @@ MonoBehaviour:
   rightCredentialImage: {fileID: 1936214089}
   leftSprites:
   - {fileID: 21300000, guid: 9ee5a0932ca669a4696808c4dc832357, type: 3}
-  rightSprites:
+  rightNormalSprites:
+  - {fileID: -1415551085, guid: 381ff620021f6064298a8a81b21f479d, type: 3}
+  rightMaloteSprites:
   - {fileID: -1415551085, guid: 381ff620021f6064298a8a81b21f479d, type: 3}
   - {fileID: -420897709, guid: eeecf0518f1626b4baf230b43a22a511, type: 3}
   leftIDText: {fileID: 77214767}

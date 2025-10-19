@@ -571,29 +571,28 @@ public class CanvasController : MonoBehaviour
     }
     IEnumerator ReproducirAudioPreguntaConHabla(AudioClip clipPregunta)
     {
-        // reproducir el sonido del botón de pregunta
+        // Reproducir sonido del botón de pregunta
         if (audioSource != null && clipPregunta != null)
             audioSource.PlayOneShot(clipPregunta);
 
-        // esperar el final aproximado del sonido de pregunta
-        yield return new WaitForSeconds(clipPregunta.length);
+        float duracion = (clipPregunta != null) ? clipPregunta.length : 0.5f;
+        yield return new WaitForSeconds(duracion);
 
-        // reproducir sonido del NPC
+        // Reproducir sonido del NPC
         if (audioNPC != null && audioHablarNPC != null)
             audioNPC.PlayOneShot(audioHablarNPC);
 
-        // activar animación Talk una sola vez
+        // Activar animación "Talk"
         if (cuboActual != null)
         {
-            Animator anim = cuboActual.GetComponentInChildren<Animator>();
-            if (anim != null)
-            {
-                anim.SetBool("Talk", true);
-                yield return new WaitForSeconds(0.5f); // duración mínima visible
-                anim.SetBool("Talk", false);
-            }
+            NPCAnimatorController npcAnim = cuboActual.GetComponent<NPCAnimatorController>();
+            if (npcAnim != null)
+                npcAnim.Hablar();
         }
+
+
     }
+
     IEnumerator AnimarDocsPanel()
     {
         if (docsRect == null)
@@ -626,3 +625,17 @@ public class CanvasController : MonoBehaviour
     }
 
 }
+
+public static class AnimatorExtensions
+{
+    public static bool HasParameterOfType(this Animator self, string name, AnimatorControllerParameterType type)
+    {
+        foreach (AnimatorControllerParameter param in self.parameters)
+        {
+            if (param.type == type && param.name == name)
+                return true;
+        }
+        return false;
+    }
+}
+
