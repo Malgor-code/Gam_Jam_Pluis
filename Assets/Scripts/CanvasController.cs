@@ -23,6 +23,11 @@ public class CanvasController : MonoBehaviour
     [Header("Bloqueo")]
     public GameObject panelBloqueo;
 
+    [Header("Animación Eliminar")]
+    public RectTransform imagenEliminar;  // arrastra aquí la imagen del Canvas
+    public float desplazamientoY = -3000f;
+    public float duracionAnim = 1f;
+
     [Header("Panel Doc")]
     public Image imgFoto;
     public Image imgDocumento;
@@ -36,6 +41,26 @@ public class CanvasController : MonoBehaviour
     public Button btnPregunta3;
     public Button btnRegresarPreguntas;
     public TMP_Text textoRespuesta;
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip audioEliminar;
+    public AudioClip audioSalvar;
+    public AudioClip audioLeerDoc;
+    public AudioClip audioPreguntas;
+    public AudioClip audioGirarIzq;
+    public AudioClip audioGirarDer;
+    public AudioClip audioPregunta1;
+    public AudioClip audioPregunta2;
+    public AudioClip audioPregunta3;
+    public AudioClip audioRegresarDoc;
+    public AudioClip audioRegresarPreguntas;
+    public AudioSource audioNPC;
+    public AudioClip audioHablarNPC;
+
+    [Header("Animación Docs Panel")]
+    public RectTransform docsRect;     // arrastra el panel del documento aquí
+    public float desplazamientoInicialY = -600f;
+    public float duracionDeslizamiento = 0.6f;
 
     [Header("Paneles Finales")]
     public Button btnReintentarGanar;
@@ -66,14 +91,26 @@ public class CanvasController : MonoBehaviour
         InicializarRespuestas();
         MostrarSolo(panelMain);
 
-        // --- Botones principales ---
-        btnEliminar.onClick.AddListener(() => StartCoroutine(ManejarDecision(false)));
-        btnSalvar.onClick.AddListener(() => StartCoroutine(ManejarDecision(true)));
+        btnEliminar.onClick.AddListener(() =>
+        {
+            ReproducirAudio(audioEliminar);
+            StartCoroutine(MoverImagenEliminar());   // mueve el sprite
+            StartCoroutine(ManejarDecision(false));   // elimina NPC sin caminar
+        });
+
+
+        btnSalvar.onClick.AddListener(() =>
+        {
+            ReproducirAudio(audioSalvar);
+            StartCoroutine(ManejarDecision(true));
+        });
 
         btnLeerDoc.onClick.AddListener(() =>
         {
-            // Mostrar documentos sin desactivar el main
-            panelDoc.SetActive(true);
+            ReproducirAudio(audioLeerDoc);
+
+            // Animación de aparición
+            StartCoroutine(AnimarDocsPanel());
 
             // Bloquear clics mientras se revisan
             if (panelBloqueo != null)
@@ -90,8 +127,11 @@ public class CanvasController : MonoBehaviour
             panelPreguntas.SetActive(false);
         });
 
+
         btnPreguntas.onClick.AddListener(() =>
         {
+            ReproducirAudio(audioPreguntas);
+
             // Mostrar solo panel de preguntas, pero mantener visible el main
             panelPreguntas.SetActive(true);
 
@@ -100,12 +140,22 @@ public class CanvasController : MonoBehaviour
                 panelBloqueo.SetActive(true);
         });
 
-        btnGirarIzq.onClick.AddListener(() => GirarUnaVez(btnGirarIzq, -45f));
-        btnGirarDer.onClick.AddListener(() => GirarUnaVez(btnGirarDer, 45f));
+        btnGirarIzq.onClick.AddListener(() =>
+        {
+            ReproducirAudio(audioGirarIzq);
+            GirarUnaVez(btnGirarIzq, -45f);
+        });
+
+        btnGirarDer.onClick.AddListener(() =>
+        {
+            ReproducirAudio(audioGirarDer);
+            GirarUnaVez(btnGirarDer, 45f);
+        });
 
         // --- Botones de regreso ---
         btnRegresarDoc.onClick.AddListener(() =>
         {
+            ReproducirAudio(audioRegresarDoc);
             panelDoc.SetActive(false);
             if (panelBloqueo != null)
                 panelBloqueo.SetActive(false);
@@ -113,15 +163,31 @@ public class CanvasController : MonoBehaviour
 
         btnRegresarPreguntas.onClick.AddListener(() =>
         {
+            ReproducirAudio(audioRegresarPreguntas);
             panelPreguntas.SetActive(false);
             if (panelBloqueo != null)
                 panelBloqueo.SetActive(false);
         });
 
         // --- Botones de preguntas ---
-        btnPregunta1.onClick.AddListener(() => PreguntaRespondida(btnPregunta1, 1));
-        btnPregunta2.onClick.AddListener(() => PreguntaRespondida(btnPregunta2, 2));
-        btnPregunta3.onClick.AddListener(() => PreguntaRespondida(btnPregunta3, 3));
+        btnPregunta1.onClick.AddListener(() =>
+        {
+            StartCoroutine(ReproducirAudioPreguntaConHabla(audioPregunta1));
+            PreguntaRespondida(btnPregunta1, 1);
+        });
+
+        btnPregunta2.onClick.AddListener(() =>
+        {
+            StartCoroutine(ReproducirAudioPreguntaConHabla(audioPregunta2));
+            PreguntaRespondida(btnPregunta2, 2);
+        });
+
+        btnPregunta3.onClick.AddListener(() =>
+        {
+            StartCoroutine(ReproducirAudioPreguntaConHabla(audioPregunta3));
+            PreguntaRespondida(btnPregunta3, 3);
+        });
+
 
         // --- Paneles finales ---
         btnReintentarGanar.onClick.AddListener(ReiniciarJuego);
@@ -133,10 +199,10 @@ public class CanvasController : MonoBehaviour
     }
 
 
+
     // Inicialización de respuestas
     void InicializarRespuestas()
     {
-        // --- Question 1 ---
         // --- Question 1 ---
         respuestasNormales[1] = new List<string>
 {
@@ -286,23 +352,38 @@ public class CanvasController : MonoBehaviour
 
     IEnumerator ManejarDecision(bool salvar)
     {
-        if (cuboActual == null || enMovimiento) yield break;
+        if (cuboActual == null || enMovimiento)
+            yield break;
+
         bool esMalote = cuboActual.CompareTag("malote");
 
-        if (salvar && esMalote)
+        // --- Condiciones de derrota ---
+        if ((salvar && esMalote) || (!salvar && !esMalote))
         {
             MostrarSolo(panelPerdiste);
             yield break;
         }
 
-        if (salvar && !esMalote)
-            yield return StartCoroutine(SalirYContinuar());
-        else if (!salvar)
-            yield return StartCoroutine(SalirYContinuar());
+        // --- Si se elimina un malote (correcto) ---
+        if (!salvar && esMalote)
+        {
+            yield return new WaitForSeconds(1f); // espera sincronizada con anim de imagen
+            Destroy(cuboActual);
+            cuboActual = null;
 
-        if (salvar && esMalote)
-            malotesSalvados++;
+            yield return new WaitForSeconds(0.3f);
+            SpawnearNuevoNPC();
+            yield break;
+        }
+
+        // --- Si se salva un NPC normal (correcto) ---
+        if (salvar && !esMalote)
+        {
+            yield return StartCoroutine(SalirYContinuar());
+            yield break;
+        }
     }
+
 
     IEnumerator SalirYContinuar()
     {
@@ -448,4 +529,100 @@ public class CanvasController : MonoBehaviour
         MostrarSolo(panelMain);
         SpawnearNuevoNPC();
     }
+    void ReproducirAudio(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
+    }
+    IEnumerator MoverImagenEliminar()
+    {
+        if (imagenEliminar == null)
+            yield break;
+
+        Vector2 inicio = imagenEliminar.anchoredPosition;
+        Vector2 destino = inicio + new Vector2(0, desplazamientoY);
+        float t = 0f;
+
+        // movimiento hacia abajo
+        while (t < duracionAnim)
+        {
+            t += Time.deltaTime;
+            float p = Mathf.Clamp01(t / duracionAnim);
+            imagenEliminar.anchoredPosition = Vector2.Lerp(inicio, destino, p);
+            yield return null;
+        }
+
+        imagenEliminar.anchoredPosition = destino;
+
+        // esperar 1 segundo antes de volver
+        yield return new WaitForSeconds(1f);
+
+        // regresar a la posición original
+        t = 0f;
+        while (t < duracionAnim)
+        {
+            t += Time.deltaTime;
+            float p = Mathf.Clamp01(t / duracionAnim);
+            imagenEliminar.anchoredPosition = Vector2.Lerp(destino, inicio, p);
+            yield return null;
+        }
+
+        imagenEliminar.anchoredPosition = inicio;
+    }
+    IEnumerator ReproducirAudioPreguntaConHabla(AudioClip clipPregunta)
+    {
+        // reproducir el sonido del botón de pregunta
+        if (audioSource != null && clipPregunta != null)
+            audioSource.PlayOneShot(clipPregunta);
+
+        // esperar el final aproximado del sonido de pregunta
+        yield return new WaitForSeconds(clipPregunta.length);
+
+        // reproducir sonido del NPC
+        if (audioNPC != null && audioHablarNPC != null)
+            audioNPC.PlayOneShot(audioHablarNPC);
+
+        // activar animación Talk una sola vez
+        if (cuboActual != null)
+        {
+            Animator anim = cuboActual.GetComponentInChildren<Animator>();
+            if (anim != null)
+            {
+                anim.SetBool("Talk", true);
+                yield return new WaitForSeconds(0.5f); // duración mínima visible
+                anim.SetBool("Talk", false);
+            }
+        }
+    }
+    IEnumerator AnimarDocsPanel()
+    {
+        if (docsRect == null)
+            yield break;
+
+        // posición inicial fuera de pantalla
+        Vector2 posFinal = docsRect.anchoredPosition;
+        Vector2 posInicio = posFinal + new Vector2(0, desplazamientoInicialY);
+        docsRect.anchoredPosition = posInicio;
+
+        panelDoc.SetActive(true);
+
+        float t = 0f;
+        float dur = duracionDeslizamiento;
+
+        while (t < dur)
+        {
+            t += Time.deltaTime;
+            float p = Mathf.Clamp01(t / dur);
+
+            // curva con rebote (usando EaseOutBack)
+            float f = 1f - Mathf.Pow(1f - p, 3f);
+            float rebote = Mathf.Sin(p * Mathf.PI) * 0.1f; // pequeño rebote extra
+            docsRect.anchoredPosition = Vector2.Lerp(posInicio, posFinal, f + rebote);
+
+            yield return null;
+        }
+
+        docsRect.anchoredPosition = posFinal;
+    }
+
 }

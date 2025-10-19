@@ -15,13 +15,12 @@ public class RandomNPC : MonoBehaviour
     public Material[] bodyMaterials;
 
     [Header("Materiales del cabello")]
-    public Material[] hairMaterials; // materiales posibles para el pelo
+    public Material[] hairMaterials;
 
     [Header("Chip")]
     public Renderer chipRenderer;
     public Material[] chipMaterials;
 
-    // --- registro de materiales usados ---
     private static List<Material> usedMaterials = new List<Material>();
 
     void Start()
@@ -39,14 +38,23 @@ public class RandomNPC : MonoBehaviour
             selectedHair = hairs[Random.Range(0, hairs.Length)];
             selectedHair.SetActive(true);
 
-            // aplicar material aleatorio si tiene Renderer
             if (hairMaterials.Length > 0)
             {
-                Renderer hairRenderer = selectedHair.GetComponentInChildren<Renderer>();
-                if (hairRenderer != null)
-                    hairRenderer.material = hairMaterials[Random.Range(0, hairMaterials.Length)];
+                Material randomHairMat = hairMaterials[Random.Range(0, hairMaterials.Length)];
+
+                // Obtener TODOS los renderers del cabello (incluidos subniveles)
+                Renderer[] renderers = selectedHair.GetComponentsInChildren<Renderer>(true);
+
+                foreach (Renderer r in renderers)
+                {
+                    Material[] mats = r.materials;
+                    for (int i = 0; i < mats.Length; i++)
+                        mats[i] = randomHairMat;
+                    r.materials = mats;
+                }
             }
         }
+
 
         // --- Accesorios ---
         foreach (var a in accessories) a.SetActive(false);
@@ -63,7 +71,7 @@ public class RandomNPC : MonoBehaviour
         if (mouths.Length > 0)
             mouths[Random.Range(0, mouths.Length)].SetActive(true);
 
-        // --- Material cuerpo + cabeza (sin repetir entre NPCs) ---
+        // --- Cuerpo + cabeza ---
         if (bodyMaterials.Length > 0 && bodyRenderer != null && headRenderer != null)
         {
             List<Material> disponibles = new List<Material>(bodyMaterials);

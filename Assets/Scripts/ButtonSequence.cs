@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 using TMPro;
 
@@ -17,10 +18,10 @@ public class ButtonSequenceFinal_NoZoomText : MonoBehaviour
     public float delayBetweenButtons = 0.3f;
     public float blackScreenFadeTime = 1f;
     public float delayBeforeBlackAfterFinal = 3f; // tiempo antes de aparecer pantalla negra
+    public float delayBeforeSceneChange = 1f; // tiempo después del fade negro
 
     void Start()
     {
-        // Inicialmente ocultar todo
         foreach (Button btn in mainButtons)
             SetButtonAlpha(btn, 0f);
 
@@ -53,7 +54,7 @@ public class ButtonSequenceFinal_NoZoomText : MonoBehaviour
             yield return StartCoroutine(FadeButton(btn, 1f, 0f, fadeOutTime));
         }
 
-        // Fade In del botón final (sin zoom)
+        // Fade In del botón final
         yield return StartCoroutine(FadeButton(finalButton, 0f, 1f, fadeInTime));
 
         // Esperar antes de mostrar la pantalla negra
@@ -61,6 +62,10 @@ public class ButtonSequenceFinal_NoZoomText : MonoBehaviour
 
         // Fade In de la pantalla negra
         yield return StartCoroutine(FadeImage(blackScreen, 0f, 1f, blackScreenFadeTime));
+
+        // Esperar un poco y luego cambiar de escena (+1)
+        yield return new WaitForSeconds(delayBeforeSceneChange);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     IEnumerator FadeButton(Button btn, float from, float to, float time)
@@ -79,15 +84,12 @@ public class ButtonSequenceFinal_NoZoomText : MonoBehaviour
 
     void SetButtonAlpha(Button btn, float alpha)
     {
-        // Fade imagen del botón
         Image img = btn.GetComponent<Image>();
         if (img) img.color = new Color(img.color.r, img.color.g, img.color.b, alpha);
 
-        // Fade de Text normal
         Text txt = btn.GetComponentInChildren<Text>();
         if (txt) txt.color = new Color(txt.color.r, txt.color.g, txt.color.b, alpha);
 
-        // Fade de TextMeshProUGUI
         TextMeshProUGUI tmp = btn.GetComponentInChildren<TextMeshProUGUI>();
         if (tmp) tmp.alpha = alpha;
     }
