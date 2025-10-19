@@ -3365,9 +3365,11 @@ MonoBehaviour:
   btnPreguntas: {fileID: 1229053166}
   btnGirarIzq: {fileID: 128599553}
   btnGirarDer: {fileID: 24715286}
+  panelBloqueo: {fileID: 0}
   imgFoto: {fileID: 361453399}
   imgDocumento: {fileID: 1936214089}
   btnRegresarDoc: {fileID: 639055575}
+  docsPanelController: {fileID: 0}
   btnPregunta1: {fileID: 999600966}
   btnPregunta2: {fileID: 550208326}
   btnPregunta3: {fileID: 573340079}
@@ -4173,10 +4175,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u201CEl progreso prometi\xF3 salvarnos.\u201D"
+  m_text: "\u201CProgress promised to save us.\u201D"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 613ab76def6894343b6d727a19887727, type: 2}
+  m_sharedMaterial: {fileID: -4416030228093336787, guid: 613ab76def6894343b6d727a19887727, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4200,8 +4202,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.69
-  m_fontSizeBase: 47.69
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4551,10 +4553,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u201CLa naturaleza se rindi\xF3.\u201D"
+  m_text: "\u201CNature gave up.\u201D\n"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 613ab76def6894343b6d727a19887727, type: 2}
+  m_sharedMaterial: {fileID: -4416030228093336787, guid: 613ab76def6894343b6d727a19887727, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -4578,8 +4580,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.69
-  m_fontSizeBase: 47.69
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5275,10 +5277,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u201CNosotros no.\""
+  m_text: "\u201CBut we didn\u2019t.\u201D"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 613ab76def6894343b6d727a19887727, type: 2}
+  m_sharedMaterial: {fileID: -4416030228093336787, guid: 613ab76def6894343b6d727a19887727, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5302,8 +5304,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.69
-  m_fontSizeBase: 47.69
+  m_fontSize: 150
+  m_fontSizeBase: 150
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5411,10 +5413,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u201CPero solo nos reemplaz\xF3.\u201D"
+  m_text: "\u201CIt only replaced us.\u201D"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 613ab76def6894343b6d727a19887727, type: 2}
+  m_sharedMaterial: {fileID: -4416030228093336787, guid: 613ab76def6894343b6d727a19887727, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -5438,8 +5440,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 47.69
-  m_fontSizeBase: 47.69
+  m_fontSize: 60
+  m_fontSizeBase: 60
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
