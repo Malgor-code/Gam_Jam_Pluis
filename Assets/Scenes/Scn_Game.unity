@@ -252,9 +252,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &24715284
 GameObject:
   m_ObjectHideFlags: 0
@@ -388,9 +390,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &65732549
 GameObject:
   m_ObjectHideFlags: 0
@@ -636,9 +640,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &256319851
 GameObject:
   m_ObjectHideFlags: 0
@@ -1226,9 +1232,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -2805,9 +2813,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &783582740
 GameObject:
   m_ObjectHideFlags: 0
@@ -3423,9 +3433,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &948407330
 GameObject:
   m_ObjectHideFlags: 0
@@ -3818,9 +3830,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddf2fb2ccc177a14886ffde07d46e0a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleMultiplier: 1.05
+  hoverScaleMultiplier: 1.05
   darkenAmount: 0.85
   transitionSpeed: 8
+  clickScaleMultiplier: 0.9
+  clickBounceSpeed: 12
 --- !u!1 &1278543748
 GameObject:
   m_ObjectHideFlags: 0
@@ -4953,7 +4967,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

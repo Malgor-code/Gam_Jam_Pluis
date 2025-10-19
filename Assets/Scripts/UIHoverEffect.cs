@@ -2,17 +2,22 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class UIHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class UIHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler, IPointerUpHandler
 {
-    [Header("Configuración del efecto")]
-    public float scaleMultiplier = 1.05f;       // Cuánto crece el botón
-    [Range(0f, 1f)] public float darkenAmount = 1f; // Qué tanto se oscurece (1 = sin cambio)
-    public float transitionSpeed = 8f;          // Velocidad de la animación
+    [Header("Efecto de Hover")]
+    public float hoverScaleMultiplier = 1.05f;
+    [Range(0f, 1f)] public float darkenAmount = 0.85f;
+    public float transitionSpeed = 8f;
+
+    [Header("Efecto de Click")]
+    public float clickScaleMultiplier = 0.9f;      // Cuánto se encoge al presionar
+    public float clickBounceSpeed = 12f;           // Qué tan rápido rebota
 
     private Vector3 originalScale;
     private Color originalColor;
     private Image targetImage;
     private bool isHovered = false;
+    private bool isClicked = false;
 
     void Start()
     {
@@ -25,13 +30,20 @@ public class UIHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
 
     void Update()
     {
-        // Escala suave
-        Vector3 targetScale = isHovered ? originalScale * scaleMultiplier : originalScale;
-        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * transitionSpeed);
+        // Determinar escala objetivo según hover y click
+        Vector3 targetScale = originalScale;
+        if (isClicked)
+            targetScale = originalScale * clickScaleMultiplier;
+        else if (isHovered)
+            targetScale = originalScale * hoverScaleMultiplier;
 
+        // Suavizar movimiento
+        float speed = isClicked ? clickBounceSpeed : transitionSpeed;
+        transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * speed);
+
+        // Oscurecer sin afectar el alpha
         if (targetImage != null)
         {
-            // Calculamos color sin afectar el alfa
             Color targetColor = originalColor;
             if (isHovered)
             {
@@ -52,5 +64,15 @@ public class UIHoverEffect : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     public void OnPointerExit(PointerEventData eventData)
     {
         isHovered = false;
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        isClicked = true;
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        isClicked = false;
     }
 }
